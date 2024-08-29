@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const miNodoBoton = document.createElement('button')
             miNodoBoton.classList.add('btn', 'btn-primary')
             miNodoBoton.textContent = '+'
+            miNodoBoton.setAttribute('marcador', producto.id)
+            miNodoBoton.addEventListener('click', anadirProductoCarrito)
 
             // unimos todos los elementos que creamos
             miNodoCardBody.appendChild(miNodoTitulo)
@@ -71,6 +73,37 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMitems.appendChild(miNodo)
         })
 
+    }
+
+    function renderizarCarrito() {
+        // limpiar data en el carrito
+        DOMcarrito.textContent = ''
+        // crear un carrito sin duplicados
+        const carritoSinDuplicados = [...new Set(carrito)]
+        carritoSinDuplicados.forEach( (item) => {
+            // obtenemos el objeto al que pertenece el id
+            const miItem = baseDeDatos.filter( (elemntoBaseDeDatos) => {
+                return parseInt(item) === elemntoBaseDeDatos.id
+            } )
+            // obtener el numero de unidades del producto
+            const numeroUnidades = carrito.reduce( (total, itemId) => {
+                return itemId === item ? total += 1 : total
+            }, 0 )
+            // crear los elementos <li> que van a ir dentro del <ul>
+            const miNodo = document.createElement('li')
+            miNodo.classList.add('list-group-item', 'text-right', 'mx-2')
+            miNodo.textContent = `${numeroUnidades} x ${miItem[0].nombre} -> ${miItem[0].precio}` // con backticks
+            // numeroUnidades + " x " + miItem[0].nombre + " -> " + miItem[0].precio // con comillas
+            // agregamos el nodo que creamos a nuestra lista <ul>
+            DOMcarrito.appendChild(miNodo)
+        } )
+    }
+
+    function anadirProductoCarrito(evento) {
+        // agregar el item al carrito
+        carrito.push(evento.target.getAttribute('marcador'))
+        // actualizamos el carrito
+        renderizarCarrito()
     }
 
 
